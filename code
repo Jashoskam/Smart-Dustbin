@@ -1,0 +1,108 @@
+  #include<Servo.h>
+  #include <SPI.h>
+  #include <Wire.h>
+  #include <Adafruit_GFX.h>
+  #include <Adafruit_SSD1306.h>
+  Adafruit_SSD1306 display(-1);
+  int pos;
+  const int triggerPin = 5; // Trigger Pin of Ultrasonic Sensor
+  const int echoPin = 6; // Echo Pin of Ultrasonic Sensor
+  long duration, cm;
+  Servo clamp;
+void setup() {
+  Serial.begin(115200); // Starting Serial Terminal
+  pinMode(triggerPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  clamp.attach(9);
+  clamp.write(180);
+
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  
+
+  // Clear the buffer.
+  display.clearDisplay();
+
+  // Display Text
+  display.clearDisplay();
+  display.setTextColor(WHITE);
+  display.setCursor(24,5);
+  display.setTextSize(1);
+  display.println("Hello");
+  display.display();
+}
+
+void loop() {
+
+   
+  
+   digitalWrite(triggerPin, LOW);
+   delayMicroseconds(2);
+   digitalWrite(triggerPin, HIGH);
+   delayMicroseconds(10);
+   digitalWrite(triggerPin, LOW);
+   
+   duration = pulseIn(echoPin, HIGH);
+   cm = (duration/ 29)/2;
+   Serial.print(cm);
+   Serial.print("cm");
+   Serial.println();
+   delay(100);
+
+   if(cm > 7){
+   display.clearDisplay();
+   display.setCursor(5,5);
+   display.setTextSize(1);
+   display.println("I am smart dustbin");
+   display.println("measuring distance");
+   display.println(cm);
+   display.print(" cm");
+   display.display();
+   for (pos = 0; pos <= 180; pos += 5) { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    clamp.write(pos);
+   }
+   }
+   else{
+  display.clearDisplay();
+  display.setCursor(10,5);
+  display.setTextSize(1);
+  display.println("Opening.");
+  display.display();
+  delay(300);
+  display.clearDisplay();
+  display.setCursor(10,5);
+  display.setTextSize(1);
+  display.println("Opening..");
+  display.display();
+  delay(300);
+  display.clearDisplay();
+  display.setCursor(10,5);
+  display.setTextSize(1);
+  display.println("Opening...");
+  delay(300);
+  display.display();
+  clamp.write(0);   
+  delay(2100);
+  display.clearDisplay();
+  display.setCursor(10,5);
+  display.setTextSize(1);
+  display.println("Closing.");
+  display.display();
+  delay(300);
+  display.clearDisplay();
+  display.setCursor(10,5);
+  display.setTextSize(1);
+  display.println("Closing..");
+  display.display();
+  delay(300);
+  display.clearDisplay();
+  display.setCursor(10,5);
+  display.setTextSize(1);
+  display.println("Closing...");
+  display.display();
+  delay(300);
+  display.display();
+
+
+   }
+}
+
